@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { of } from 'rxjs';
 
 function mustContainQuestionMark(control: AbstractControl) {
   if (control.value.includes('?')) {
@@ -9,6 +10,14 @@ function mustContainQuestionMark(control: AbstractControl) {
   return { doesNotContainQuestionMark: true};
 }
 
+function emailIsUnique(control: AbstractControl){
+  if (control.value !== 'text@example.com') {
+    return of(null);
+  }
+
+  return of({ notUnique: true });
+}
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -16,10 +25,11 @@ function mustContainQuestionMark(control: AbstractControl) {
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   form = new FormGroup({
     email: new FormControl('', {
       validators: [Validators.email, Validators.required],
+      asyncValidators: [emailIsUnique]
     }),
     password: new FormControl('', {
       validators: [Validators.required, Validators.minLength(6), mustContainQuestionMark],
@@ -32,6 +42,14 @@ export class LoginComponent {
 
   get passwordIsInvaild() {
     return (this.form.controls.password.touched && this.form.controls.password.dirty && this.form.controls.password.invalid);
+  }
+
+  ngOnInit(){
+    this.form.valueChanges.pipe().subscribe(
+      next: value => {
+        window.localStorage.setItem('saved-login-form', JSON.stringify({ email: value.email }))
+      }
+    );
   }
 
   onSubmit() {
