@@ -1,17 +1,25 @@
-<form>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
   <h2>Login</h2>
 
   <div class="control-row">
     <div class="control no-margin">
       <label for="email">Email</label>
-      <input id="email" type="email" />
+      <input id="email" type="email" [formControl]="form.controls.email" />
     </div>
 
     <div class="control no-margin">
       <label for="password">Password</label>
-      <input id="password" type="password" />
+      <input id="password" type="password" formControlName="password" />
     </div>
 
     <button class="button">Login</button>
   </div>
+
+  @if (emailIsInvaild) {
+    <p class="control-error">please enter a vaild email address</p>
+  }
+
+  @if (passwordIsInvaild) {
+    <p class="control-error">please enter a vaild password (must be 6 charaters long)</p>
+  }
 </form>
