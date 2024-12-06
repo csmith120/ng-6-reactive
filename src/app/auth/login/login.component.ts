@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { of } from 'rxjs';
+import { debounceTime, of } from 'rxjs';
 
 function mustContainQuestionMark(control: AbstractControl) {
   if (control.value.includes('?')) {
@@ -45,11 +45,11 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(){
-    this.form.valueChanges.pipe().subscribe(
-      next: value => {
+    this.form.valueChanges.pipe(debounceTime(500)).subscribe({
+      next: (value) => {
         window.localStorage.setItem('saved-login-form', JSON.stringify({ email: value.email }))
       }
-    );
+    });
   }
 
   onSubmit() {
@@ -59,3 +59,7 @@ export class LoginComponent implements OnInit {
     console.log(enteredEmail, enteredpassword);
   }
 }
+function next(value: Partial<{ email: string | null; password: string | null; }>): void {
+  throw new Error('Function not implemented.');
+}
+
