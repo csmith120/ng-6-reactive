@@ -1,16 +1,18 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-function equalValues(control: AbstractControl) {
-  const password = control.get('password')?.value;
-  const confirmPassword = control.get('confirmPassword')?.value;
+function equalValues(controlName1: string, controlName2: string) {
 
-  if (password === confirmPassword) {
+  return (control: AbstractControl) => {
+    const val1 = control.get(controlName1)?.value;
+  const val2 = control.get(controlName2)?.value;
+
+  if (val1 === val2) {
     return null;
   }
 
   return {passwordsNotEqual: true};
-
+  }
 }
 
 @Component({
@@ -35,7 +37,7 @@ export class SignupComponent {
       }),
     },
     {
-      validators: [equalValues],
+      validators: [equalValues('password', 'confirmPassword')],
     }
   ),
     
